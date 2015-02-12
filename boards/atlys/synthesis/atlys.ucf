@@ -1,0 +1,187 @@
+CONFIG PART = xc6slx45-3-csg324 ;
+CONFIG VCCAUX = 3.3;
+
+#
+# Constraint for RX0
+#
+NET "dvi_rx0/rxclk" TNM_NET = DVI_CLOCK0;
+TIMESPEC TS_DVI_CLOCK0 = PERIOD "DVI_CLOCK0" 100 MHz HIGH 50%;
+
+
+########################################
+# Reset button and LEDs
+########################################
+NET "RSTBTN"        LOC = "N4" | IOSTANDARD = LVCMOS33;
+NET "LED<0>"        LOC = "U18" | IOSTANDARD = LVCMOS33;
+NET "LED<1>"        LOC = "M14" | IOSTANDARD = LVCMOS33;
+NET "LED<2>"        LOC = "N14" | IOSTANDARD = LVCMOS33;
+NET "LED<3>"        LOC = "L14" | IOSTANDARD = LVCMOS33;
+NET "LED<4>"        LOC = "M13" | IOSTANDARD = LVCMOS33;
+NET "LED<5>"        LOC = "D4" | IOSTANDARD = LVCMOS33;
+NET "LED<6>"        LOC = "P16" | IOSTANDARD = LVCMOS33;
+NET "LED<7>"        LOC = "N12" | IOSTANDARD = LVCMOS33;
+
+##############################################################################
+# SYSCLK Input
+##############################################################################
+
+NET "SYS_CLK"       LOC = "L15" | IOSTANDARD = LVCMOS33 | PERIOD = 100 MHz;
+
+##############################################################################
+# Mechanical Switches (SW)
+##############################################################################
+
+NET "SW<0>"         LOC = "A10" | IOSTANDARD = LVCMOS33 ;
+NET "SW<1>"         LOC = "D14" | IOSTANDARD = LVCMOS33 ;
+NET "SW<2>"         LOC = "C14" | IOSTANDARD = LVCMOS33 ;
+NET "SW<3>"         LOC = "P15" | IOSTANDARD = LVCMOS33 ;
+NET "DEBUG_SW<0>"         LOC = "P12" | IOSTANDARD = LVCMOS33 | CLOCK_DEDICATED_ROUTE = FALSE;
+NET "DEBUG_SW<1>"         LOC = "R5" | IOSTANDARD = LVCMOS33  | CLOCK_DEDICATED_ROUTE = FALSE;
+NET "DEBUG_SW<2>"         LOC = "T5" | IOSTANDARD = LVCMOS33  | CLOCK_DEDICATED_ROUTE = FALSE;
+NET "DEBUG_SW<3>"         LOC = "E4" | IOSTANDARD = LVCMOS33  | CLOCK_DEDICATED_ROUTE = FALSE;
+
+##############################################################################
+# Debug Port # JA1
+##############################################################################
+#NET "DEBUG[0]" LOC = "B12" | IOSTANDARD = LVCMOS33;
+#NET "DEBUG[1]" LOC = "B11" | IOSTANDARD = LVCMOS33;
+
+##############################################################################
+# DCM/PLL/BUFPLL position
+##############################################################################
+#INST "PCLK_GEN_INST" LOC = "DCM_X0Y3"; 
+#INST "PLL_OSERDES"   LOC = "PLL_ADV_X0Y1";
+#INST "ioclk_buf"     LOC = "BUFPLL_X1Y0";
+
+###########################################
+# Timing Constraints
+###########################################
+NET "clk50m_bufg" TNM_NET = "TNM_CLK50M";
+TIMESPEC "TS_CLK50M" = PERIOD "TNM_CLK50M" 50 MHz HIGH 50 % PRIORITY 0 ;
+
+NET "pclk" TNM_NET = "TNM_PCLK";
+TIMESPEC "TS_PCLK" = PERIOD "TNM_PCLK" 75 MHz HIGH 50 % PRIORITY 0 ;
+
+NET "pclkx2" TNM_NET = "TNM_PCLKX2";
+TIMESPEC "TS_PCLKX2" = PERIOD "TNM_PCLKX2" TS_PCLK * 2;
+
+NET "pclkx10" TNM_NET = "TNM_PCLKX10";
+TIMESPEC "TS_PCLKX10" = PERIOD "TNM_PCLKX10" TS_PCLK * 10;
+
+NET "RXCLK" TNM_NET = "TNM_RXCLK";
+TIMESPEC "TS_RXCLK" = PERIOD "TNM_RXCLK" 125 MHz HIGH 50 % PRIORITY 0 ;
+
+#
+# Multi-cycle paths
+#
+TIMEGRP "bramgrp" = RAMS(enc0/pixel2x/dataint<*>);  
+TIMEGRP "fddbgrp" = FFS(enc0/pixel2x/db<*>);
+TIMEGRP "bramra" = FFS(enc0/pixel2x/ra<*>);
+
+TIMESPEC "TS_ramdo" = FROM "bramgrp" TO "fddbgrp" TS_PCLK;
+TIMESPEC "TS_ramra" = FROM "bramra" TO "fddbgrp" TS_PCLK;
+
+# TMDS pairs for Atlys IN (FPGA Bank 0): J1
+# ##############################################
+# #PIN "dvi_rx0/pclkbufg.O" CLOCK_DEDICATED_ROUTE = FALSE;
+
+#NET "RX0_TMDS(0)"   LOC = "G9"  |IOSTANDARD = TMDS_33 ; # Blue      
+#NET "RX0_TMDSB(0)"  LOC = "F9"  |IOSTANDARD = TMDS_33 ;
+#NET "RX0_TMDS(1)"   LOC = "B11" |IOSTANDARD = TMDS_33 ; # Green     
+#NET "RX0_TMDSB(1)"  LOC = "A11" |IOSTANDARD = TMDS_33 ;
+#NET "RX0_TMDS(2)"   LOC = "B12" |IOSTANDARD = TMDS_33 ; # Red
+#NET "RX0_TMDSB(2)"  LOC = "A12" |IOSTANDARD = TMDS_33 ;
+#NET "RX0_TMDS(3)"   LOC = "D11" |IOSTANDARD = TMDS_33 ; # CLK
+#NET "RX0_TMDSB(3)"  LOC = "C11" |IOSTANDARD = TMDS_33 ;
+
+##############################################################
+# TMDS pairs on the top TMDS IN (FPGA Bank 1): J3 
+##############################################################
+#NET "RX0_TMDS(0)"  	LOC = "K17" | IOSTANDARD = TMDS_33 ; # Blue
+#NET "RX0_TMDSB(0)"  LOC = "K18" | IOSTANDARD = TMDS_33 ;
+#NET "RX0_TMDS(1)"  	LOC = "L17" | IOSTANDARD = TMDS_33 ; # Red
+#NET "RX0_TMDSB(1)"  LOC = "L18" | IOSTANDARD = TMDS_33 ;
+#NET "RX0_TMDS(2)"  	LOC = "J16" | IOSTANDARD = TMDS_33 ; # Green
+#NET "RX0_TMDSB(2)"  LOC = "J18" | IOSTANDARD = TMDS_33 ;
+#NET "RX0_TMDS(3)"  	LOC = "H17" | IOSTANDARD = TMDS_33 ; # Clock
+#NET "RX0_TMDSB(3)"  LOC = "H18" | IOSTANDARD = TMDS_33 ;
+
+##############################################################
+# TMDS pairs on the top TMDS OUT (FPGA Bank 0): J2 
+##############################################################
+NET "TMDS(0)"  	LOC = "D8" | IOSTANDARD = TMDS_33 ; # Blue
+NET "TMDSB(0)"  LOC = "C8" | IOSTANDARD = TMDS_33 ;
+NET "TMDS(1)"  	LOC = "C7" | IOSTANDARD = TMDS_33 ; # Red
+NET "TMDSB(1)"  LOC = "A7" | IOSTANDARD = TMDS_33 ;
+NET "TMDS(2)"  	LOC = "B8" | IOSTANDARD = TMDS_33 ; # Green
+NET "TMDSB(2)"  LOC = "A8" | IOSTANDARD = TMDS_33 ;
+NET "TMDS(3)"  	LOC = "B6" | IOSTANDARD = TMDS_33 ; # Clock
+NET "TMDSB(3)"  LOC = "A6" | IOSTANDARD = TMDS_33 ;
+
+
+################################################################
+#  Ethetnet Phy
+#
+# O
+#		1. IOSTANDARDLVCMOSőv
+#		2. ̃IvVȂĕC
+#
+#  made on 13th, Aug
+################################################################
+PIN "clk125_gen/clkout1_buf.O" CLOCK_DEDICATED_ROUTE = FALSE; 
+#PIN "clk125_gen/clkout2_buf.O" CLOCK_DEDICATED_ROUTE = FALSE;
+
+
+#NET "clk125_gen/clkout2_buf.O" TNM_NET = "TNM_CLK_125M";
+#TIMESPEC "TS_CLK_125M" = PERIOD "TNM_CLK_125M" 125 MHz HIGH 50 % PRIORITY 0 ;
+
+#NET "MDIO"		LOC = "N17" | IOSTANDARD = LVCMOS33;
+#NET "MDC"		LOC = "F16" | IOSTANDARD = LVCMOS33;
+#NET "INT"		LOC = "L16" | IOSTANDARD = LVCMOS33;
+NET "RESET"	LOC = "G13" | IOSTANDARD = LVCMOS33;
+#NET "COL"		LOC = "C17" | IOSTANDARD = LVCMOS33;
+#NET "CRS"		LOC = "C18" | IOSTANDARD = LVCMOS33;
+
+NET "RXDV"		LOC = "F17" | IOSTANDARD = LVCMOS33;
+NET "RXCLK"		LOC = "K15" | IOSTANDARD = LVCMOS33;
+#NET "RXER"		LOC = "F18" | IOSTANDARD = LVCMOS33;
+
+NET "RXD<0>"	LOC = "G16" | IOSTANDARD = LVCMOS33;
+NET "RXD<1>"	LOC = "H14" | IOSTANDARD = LVCMOS33;
+NET "RXD<2>"	LOC = "E16" | IOSTANDARD = LVCMOS33;
+NET "RXD<3>"	LOC = "F15" | IOSTANDARD = LVCMOS33;
+NET "RXD<4>"	LOC = "F14" | IOSTANDARD = LVCMOS33;
+NET "RXD<5>"	LOC = "E18" | IOSTANDARD = LVCMOS33;
+NET "RXD<6>"	LOC = "D18" | IOSTANDARD = LVCMOS33;
+NET "RXD<7>"	LOC = "D17" | IOSTANDARD = LVCMOS33;
+
+NET "GTXCLK"	LOC = "L12" | IOSTANDARD = LVCMOS33;
+#NET "TXCLK"	LOC = "K16" | IOSTANDARD = LVCMOS33;
+NET "TXER"		LOC = "G18" | IOSTANDARD = LVCMOS33;
+NET "TXEN"		LOC = "H15" | IOSTANDARD = LVCMOS33;
+
+
+NET "TXD<0>"	LOC = "H16" | IOSTANDARD = LVCMOS33;
+NET "TXD<1>"	LOC = "H13" | IOSTANDARD = LVCMOS33;
+NET "TXD<2>"	LOC = "K14" | IOSTANDARD = LVCMOS33;
+NET "TXD<3>"	LOC = "K13" | IOSTANDARD = LVCMOS33;
+NET "TXD<4>"	LOC = "J13" | IOSTANDARD = LVCMOS33;
+NET "TXD<5>"	LOC = "G14" | IOSTANDARD = LVCMOS33;
+NET "TXD<6>"	LOC = "H12" | IOSTANDARD = LVCMOS33;
+NET "TXD<7>"	LOC = "K12" | IOSTANDARD = LVCMOS33;
+
+
+##############################################################################
+#
+# Pmod Port for DEBUG
+#
+##############################################################################
+
+NET "JA<0>"		LOC = "T3" | IOSTANDARD = LVCMOS33 | SLEW = FAST;
+NET "JA<1>"		LOC = "R3" | IOSTANDARD = LVCMOS33 | SLEW = FAST;
+NET "JA<2>"		LOC = "P6" | IOSTANDARD = LVCMOS33 | SLEW = FAST;
+NET "JA<3>"		LOC = "N5" | IOSTANDARD = LVCMOS33 | SLEW = FAST;
+NET "JA<4>"		LOC = "V9" | IOSTANDARD = LVCMOS33 | SLEW = FAST;
+#NET "JA<5>"		LOC = "T9";
+#NET "JA<6>"		LOC = "V4";
+#NET "JA<7>"		LOC = "T4";

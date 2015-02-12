@@ -1,0 +1,48 @@
+I2C ROM for EDID (Extended Display Identification Data) IP CORE
+-----------------------------
+[> Description
+ - This project is a target device which transmits display mode to video source using I2C DDC protocol.
+ - for HDMI camera capture device or video switcher developer
+
+[> Features
+ - Support I2C slave protocol and EDID (Extended Display Identification Data) ROM
+ - Support for read
+ - 8bit addressing (max 256 byte)
+
+[> Resouces
+ - 66 LUTs, 1 RAMB8BWER (XC6SLX45)
+
+[> License
+ - BSD
+
+[> Directory Structure
+ /boards/     Top-level design files, constraint files and Makefiles
+              for supported FPGA boards.
+ /cores/      Cores library
+ /software/   Software and data files
+
+[> Tested board
+1- Digilent Atlys
+2- Digilent ZYBO
+
+[> Building tools
+ - Xilinx ISE 14.7 (Atlys)
+ - Vivado 2014.4 (ZYBO)
+
+[> How to build
+In the case of ATLYS
+1- cd boards/atlys/synthesis
+2- make load or make flash
+
+In the case of ZYBO
+1- cd boards/zybo/synthesis
+2- ./make_batch
+3- ./load.sh (you need impact of ISE)
+
+[> Prepare EDID ROM
+1- see ./software/edid/README
+
+[> History
+2015/02/11 first release
+
+Takeshi Matsuya, macchan@sfc.wide.ad.jp

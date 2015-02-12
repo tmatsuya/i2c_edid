@@ -1,0 +1,20 @@
+How to make EDID hex files
+(Centos6.5/Fedora 21)
+
+1. find EDID interface device on your machine
+   % ./list.sh
+
+2. check connected device ( if connected monitor, results are not zero )
+   % wc /sys/devices/***/card0-HDMI-A-1/edid
+
+3. copy EDID file to current directory ( file extension must be ".edid")
+   % cp /sys/devices/***/card0-HDMI-A-1/edid  hoge.edid
+
+4. generate hex files for syntheis
+   % ./run.sh
+
+5. edit HDL source file ( PARAMETER HEX_FILE = "hoge.hex")
+   % vi ../../boards/atlys/rtl/top.v
+
+6. build
+   % cd ../../boards/atlys/synthesis && make load
